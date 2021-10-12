@@ -40,15 +40,14 @@ void disemvowel(FILE* inputFile, FILE* outputFile) {
      * in a buffer of data, copy the nonstrlen(out_buf)-vowels to the output buffer, and
      * use fwrite to write that out.
      */
-    char *out_buf;
-    char *buffer[1024];
 
-    //FILE * stream = fopen(inputFile, "r");
-    int count = fread(&buffer, sizeof(char), sizeof(inputFile), inputFile);
-    //fclose(stream);
-    out_buf = calloc(sizeof(char), count);
-    int num = copy_non_vowels(count, buffer, out_buf);
-    fwrite(out_buf, sizeof(char), num, outputFile);
+    char in_buf[BUF_SIZE];
+    char out_buf[BUF_SIZE];
+    while(!feof(inputFile)){
+        int count = fread(in_buf, sizeof(char), BUF_SIZE, inputFile);
+        int num = copy_non_vowels(count, in_buf, out_buf);
+        fwrite(out_buf, sizeof(char), num, outputFile);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -62,12 +61,12 @@ int main(int argc, char *argv[]) {
     // if user gives two arguments takes input from file and
     // outputs to given file; if only one argument, reads from
     // that file and writes to stdout.
-    if(argc == 2){
-        inputFile = argv[1];
-        outputFile = argv[2];
+    if(argc == 3){
+        inputFile = fopen(argv[1], "r");
+        outputFile = fopen(argv[2], "w");
     }
-    else if(argc == 1){
-        inputFile = argv[1];
+    else if(argc == 2){
+        inputFile = fopen(argv[1], "r");
     }
 
     // Code that processes the command line arguments
